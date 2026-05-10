@@ -9,11 +9,22 @@ import {
   Github,
   Mail,
   MessageCircle,
+  Phone,
   Send,
   UserRoundCheck,
 } from "lucide-react";
 
-const contacts = [
+interface ContactLink {
+  label: string;
+  value: string;
+  description: string;
+  href?: string;
+  copyValue?: string;
+  icon: typeof Github;
+  available: boolean;
+}
+
+const contacts: ContactLink[] = [
   {
     label: "GitHub",
     value: "@Reliceas",
@@ -32,15 +43,26 @@ const contacts = [
   },
   {
     label: "Telegram",
-    value: "Add your handle",
-    description: "Placeholder ready for a Telegram link.",
+    value: "@baldikchmochi",
+    description: "Fastest way to message Amir directly.",
+    href: "https://t.me/baldikchmochi",
+    copyValue: "https://t.me/baldikchmochi",
     icon: Send,
-    available: false,
+    available: true,
+  },
+  {
+    label: "Phone",
+    value: "+7 705 845 90 98",
+    description: "Direct phone contact for urgent collaboration questions.",
+    href: "tel:+77058459098",
+    copyValue: "+77058459098",
+    icon: Phone,
+    available: true,
   },
   {
     label: "Email",
     value: "Add your email",
-    description: "Placeholder ready for a mailto link.",
+    description: "Optional placeholder ready for a future mailto link.",
     icon: Mail,
     available: false,
   },
@@ -85,9 +107,8 @@ export function ContactApp() {
             </div>
             <h1 className="text-2xl font-bold text-foreground">Contact Amir</h1>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-              Use this hub to open verified links, copy contact details, or
-              prepare future Telegram/email handles without digging through the
-              UI.
+              Use this hub to open verified links, copy Telegram/phone details,
+              or prepare future email handles without digging through the UI.
             </p>
           </div>
           <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-cyan-400 text-3xl font-black text-black shadow-lg shadow-cyan-400/25">
@@ -108,7 +129,8 @@ export function ContactApp() {
         >
           {contacts.map((contact) => {
             const Icon = contact.icon;
-            const copyTarget = contact.href ?? contact.value;
+            const copyTarget =
+              contact.copyValue ?? contact.href ?? contact.value;
             const isCopied = copiedValue === copyTarget;
 
             return (
@@ -195,8 +217,8 @@ export function ContactApp() {
             ))}
           </div>
           <div className="mt-4 rounded-xl border border-cyan-400/20 bg-cyan-400/10 p-3 text-xs leading-relaxed text-cyan-100/80">
-            Tip: add real Telegram/email values in `ContactApp.tsx` later and
-            this hub will become a complete contact card.
+            Tip: Telegram and phone are ready. Add email later if you want a
+            complete multi-channel contact card.
           </div>
         </motion.aside>
       </div>

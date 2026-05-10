@@ -45,6 +45,12 @@ const techStack = [
   },
 ];
 
+const contactLinks = [
+  { label: "GitHub", href: "https://github.com/Reliceas" },
+  { label: "Telegram", href: "https://t.me/baldikchmochi" },
+  { label: "Phone", href: "tel:+77058459098" },
+];
+
 const projects = [
   {
     name: "CyberOS",
@@ -373,15 +379,22 @@ export function AboutApp() {
           className="text-center text-xs text-muted-foreground py-4"
         >
           <p>Open to collaborations and cool projects</p>
-          <div className="flex justify-center gap-4 mt-3">
-            {["GitHub", "Telegram", "Discord"].map((platform) => (
-              <motion.span
-                key={platform}
+          <div className="flex justify-center gap-4 mt-3 flex-wrap">
+            {contactLinks.map((contact) => (
+              <motion.a
+                key={contact.label}
+                href={contact.href}
+                target={contact.href.startsWith("http") ? "_blank" : undefined}
+                rel={
+                  contact.href.startsWith("http")
+                    ? "noopener noreferrer"
+                    : undefined
+                }
                 whileHover={{ scale: 1.1, y: -2 }}
                 className="text-cyan-400 hover:text-cyan-300 cursor-pointer px-3 py-1 rounded-full border border-cyan-400/20 hover:border-cyan-400/50 hover:bg-cyan-400/10 transition-all"
               >
-                {platform}
-              </motion.span>
+                {contact.label}
+              </motion.a>
             ))}
           </div>
         </motion.section>
