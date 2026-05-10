@@ -1,51 +1,98 @@
-"use client"
+"use client";
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef } from "react";
 
 interface Particle {
-  x: number
-  y: number
-  size: number
-  speedX: number
-  speedY: number
-  opacity: number
-  twinkleSpeed: number
-  twinkleOffset: number
+  x: number;
+  y: number;
+  size: number;
+  speedX: number;
+  speedY: number;
+  opacity: number;
+  twinkleSpeed: number;
+  twinkleOffset: number;
 }
 
 interface MatrixChar {
-  x: number
-  y: number
-  char: string
-  speed: number
-  opacity: number
+  x: number;
+  y: number;
+  char: string;
+  speed: number;
+  opacity: number;
 }
 
 interface ParticleBackgroundProps {
-  variant?: "stars" | "matrix"
+  variant?: "stars" | "matrix";
 }
 
-export function ParticleBackground({ variant = "stars" }: ParticleBackgroundProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const particlesRef = useRef<Particle[]>([])
-  const matrixCharsRef = useRef<MatrixChar[]>([])
-  const animationRef = useRef<number>(0)
+const matrixCharacters =
+  "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789";
+
+export function ParticleBackground({
+  variant = "stars",
+}: ParticleBackgroundProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const particlesRef = useRef<Particle[]>([]);
+  const matrixCharsRef = useRef<MatrixChar[]>([]);
+  const animationRef = useRef<number>(0);
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const motionPreference = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    const stopAnimation = () => {
+      if (animationRef.current) {
+        window.cancelAnimationFrame(animationRef.current);
+      }
+    };
+
+    const drawStaticBackground = () => {
+      ctx.fillStyle = variant === "matrix" ? "#000" : "#0a0f19";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const gradient = ctx.createRadialGradient(
+        canvas.width / 2,
+        canvas.height / 2,
+        0,
+        canvas.width / 2,
+        canvas.height / 2,
+        canvas.width * 0.7,
+      );
+      gradient.addColorStop(
+        0,
+        variant === "matrix"
+          ? "rgba(0, 255, 100, 0.12)"
+          : "rgba(0, 180, 220, 0.14)",
+      );
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    };
 
     const createParticles = () => {
-      const particles: Particle[] = []
-      const particleCount = Math.floor((canvas.width * canvas.height) / 8000)
+      const particles: Particle[] = [];
+      const isSmallScreen = canvas.width < 768;
+      const particleCount = Math.min(
+        isSmallScreen ? 70 : 180,
+        Math.max(
+          24,
+          Math.floor(
+            (canvas.width * canvas.height) / (isSmallScreen ? 12000 : 8000),
+          ),
+        ),
+      );
 
       for (let i = 0; i < particleCount; i++) {
         particles.push({
@@ -57,149 +104,156 @@ export function ParticleBackground({ variant = "stars" }: ParticleBackgroundProp
           opacity: Math.random() * 0.5 + 0.2,
           twinkleSpeed: Math.random() * 0.02 + 0.01,
           twinkleOffset: Math.random() * Math.PI * 2,
-        })
+        });
       }
 
-      particlesRef.current = particles
-    }
+      particlesRef.current = particles;
+    };
 
     const createMatrixChars = () => {
-      const chars: MatrixChar[] = []
-      const columns = Math.floor(canvas.width / 20)
-      const matrixChars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789"
+      const chars: MatrixChar[] = [];
+      const columnWidth = canvas.width < 768 ? 28 : 20;
+      const columns = Math.floor(canvas.width / columnWidth);
 
       for (let i = 0; i < columns; i++) {
         chars.push({
-          x: i * 20,
+          x: i * columnWidth,
           y: Math.random() * canvas.height,
-          char: matrixChars[Math.floor(Math.random() * matrixChars.length)],
-          speed: Math.random() * 3 + 2,
+          char: matrixCharacters[
+            Math.floor(Math.random() * matrixCharacters.length)
+          ],
+          speed: Math.random() * 2.5 + 1.5,
           opacity: Math.random() * 0.5 + 0.5,
-        })
+        });
       }
 
-      matrixCharsRef.current = chars
-    }
+      matrixCharsRef.current = chars;
+    };
 
     const animateStars = (time: number) => {
-      ctx.fillStyle = "rgba(10, 15, 25, 1)"
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillStyle = "rgba(10, 15, 25, 1)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw gradient overlay
       const gradient = ctx.createRadialGradient(
         canvas.width / 2,
         canvas.height / 2,
         0,
         canvas.width / 2,
         canvas.height / 2,
-        canvas.width * 0.7
-      )
-      gradient.addColorStop(0, "rgba(0, 60, 80, 0.1)")
-      gradient.addColorStop(1, "rgba(0, 0, 0, 0)")
-      ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+        canvas.width * 0.7,
+      );
+      gradient.addColorStop(0, "rgba(0, 60, 80, 0.1)");
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       particlesRef.current.forEach((particle) => {
-        // Update position
-        particle.x += particle.speedX
-        particle.y += particle.speedY
+        particle.x += particle.speedX;
+        particle.y += particle.speedY;
 
-        // Wrap around edges
-        if (particle.x < 0) particle.x = canvas.width
-        if (particle.x > canvas.width) particle.x = 0
-        if (particle.y < 0) particle.y = canvas.height
-        if (particle.y > canvas.height) particle.y = 0
+        if (particle.x < 0) particle.x = canvas.width;
+        if (particle.x > canvas.width) particle.x = 0;
+        if (particle.y < 0) particle.y = canvas.height;
+        if (particle.y > canvas.height) particle.y = 0;
 
-        // Calculate twinkle
-        const twinkle = Math.sin(time * particle.twinkleSpeed + particle.twinkleOffset)
-        const currentOpacity = particle.opacity * (0.5 + twinkle * 0.5)
+        const twinkle = Math.sin(
+          time * particle.twinkleSpeed + particle.twinkleOffset,
+        );
+        const currentOpacity = particle.opacity * (0.5 + twinkle * 0.5);
 
-        // Draw particle
-        ctx.beginPath()
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(100, 220, 255, ${currentOpacity})`
-        ctx.fill()
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(100, 220, 255, ${currentOpacity})`;
+        ctx.fill();
 
-        // Draw glow for brighter particles
         if (particle.size > 1 && currentOpacity > 0.4) {
-          ctx.beginPath()
-          ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(100, 220, 255, ${currentOpacity * 0.2})`
-          ctx.fill()
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(100, 220, 255, ${currentOpacity * 0.2})`;
+          ctx.fill();
         }
-      })
+      });
 
-      animationRef.current = requestAnimationFrame((t) => animateStars(t))
-    }
+      animationRef.current = window.requestAnimationFrame((nextTime) =>
+        animateStars(nextTime),
+      );
+    };
 
     const animateMatrix = () => {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)"
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.font = "16px monospace"
-      const matrixChars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789"
+      ctx.font = canvas.width < 768 ? "14px monospace" : "16px monospace";
 
       matrixCharsRef.current.forEach((char) => {
-        // Draw character with glow
-        ctx.shadowColor = "rgba(0, 255, 100, 0.8)"
-        ctx.shadowBlur = 10
-        ctx.fillStyle = `rgba(0, 255, 100, ${char.opacity})`
-        ctx.fillText(char.char, char.x, char.y)
-        ctx.shadowBlur = 0
+        ctx.shadowColor = "rgba(0, 255, 100, 0.8)";
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = `rgba(0, 255, 100, ${char.opacity})`;
+        ctx.fillText(char.char, char.x, char.y);
+        ctx.shadowBlur = 0;
 
-        // Update position
-        char.y += char.speed
+        char.y += char.speed;
 
-        // Reset when off screen
         if (char.y > canvas.height) {
-          char.y = 0
-          char.char = matrixChars[Math.floor(Math.random() * matrixChars.length)]
-          char.opacity = Math.random() * 0.5 + 0.5
+          char.y = 0;
+          char.char =
+            matrixCharacters[
+              Math.floor(Math.random() * matrixCharacters.length)
+            ];
+          char.opacity = Math.random() * 0.5 + 0.5;
         }
 
-        // Randomly change character
         if (Math.random() < 0.01) {
-          char.char = matrixChars[Math.floor(Math.random() * matrixChars.length)]
+          char.char =
+            matrixCharacters[
+              Math.floor(Math.random() * matrixCharacters.length)
+            ];
         }
-      })
+      });
 
-      animationRef.current = requestAnimationFrame(animateMatrix)
-    }
+      animationRef.current = window.requestAnimationFrame(animateMatrix);
+    };
 
-    resizeCanvas()
+    const setupScene = () => {
+      stopAnimation();
+      resizeCanvas();
 
-    if (variant === "matrix") {
-      createMatrixChars()
-      ctx.fillStyle = "black"
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      animationRef.current = requestAnimationFrame(animateMatrix)
-    } else {
-      createParticles()
-      animationRef.current = requestAnimationFrame((t) => animateStars(t))
-    }
-
-    const handleResize = () => {
-      resizeCanvas()
-      if (variant === "matrix") {
-        createMatrixChars()
-      } else {
-        createParticles()
+      if (motionPreference.matches) {
+        drawStaticBackground();
+        return;
       }
-    }
 
-    window.addEventListener("resize", handleResize)
+      if (variant === "matrix") {
+        createMatrixChars();
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        animationRef.current = window.requestAnimationFrame(animateMatrix);
+      } else {
+        createParticles();
+        animationRef.current = window.requestAnimationFrame((time) =>
+          animateStars(time),
+        );
+      }
+    };
+
+    setupScene();
+
+    window.addEventListener("resize", setupScene);
+    motionPreference.addEventListener("change", setupScene);
 
     return () => {
-      cancelAnimationFrame(animationRef.current)
-      window.removeEventListener("resize", handleResize)
-    }
-  }, [variant])
+      stopAnimation();
+      window.removeEventListener("resize", setupScene);
+      motionPreference.removeEventListener("change", setupScene);
+    };
+  }, [variant]);
 
   return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none"
       style={{ zIndex: 0 }}
+      aria-hidden="true"
     />
-  )
+  );
 }
