@@ -18,6 +18,8 @@ import { MusicApp } from "./apps/MusicApp";
 import { NeonSnakeApp } from "./apps/NeonSnakeApp";
 import { StackApp } from "./apps/StackApp";
 import { AboutApp } from "./apps/AboutApp";
+import { ProjectsApp } from "./apps/ProjectsApp";
+import { ContactApp } from "./apps/ContactApp";
 import type { AppId } from "./types";
 
 const wallpapers = ["default", "matrix", "gradient-blue"] as const;
@@ -155,6 +157,10 @@ function DesktopContent() {
         return <NeonSnakeApp />;
       case "stack":
         return <StackApp />;
+      case "projects":
+        return <ProjectsApp />;
+      case "contact":
+        return <ContactApp />;
       case "about":
         return <AboutApp />;
       default:
@@ -181,6 +187,8 @@ function DesktopContent() {
         <DesktopIcon id="browser" icon="globe" label="Browser" />
         <DesktopIcon id="snake" icon="gamepad" label="Neon Snake" />
         <DesktopIcon id="stack" icon="layers" label="My Stack" />
+        <DesktopIcon id="projects" icon="code" label="Projects" />
+        <DesktopIcon id="contact" icon="mail" label="Contact" />
         <DesktopIcon id="about" icon="user" label="About" />
       </div>
 
@@ -330,6 +338,38 @@ function DesktopIcon({
               strokeLinejoin="round"
               strokeWidth={2}
               d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+            />
+          </svg>
+        );
+      case "code":
+        return (
+          <svg
+            className="w-8 h-8 text-pink-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+            />
+          </svg>
+        );
+      case "mail":
+        return (
+          <svg
+            className="w-8 h-8 text-teal-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-18 8h18a2 2 0 002-2V8a2 2 0 00-2-2H3a2 2 0 00-2 2v6a2 2 0 002 2z"
             />
           </svg>
         );

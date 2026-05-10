@@ -12,6 +12,8 @@ import {
   Gamepad2,
   Layers,
   User,
+  FolderKanban,
+  Mail,
   Search,
   Sparkles,
   Power,
@@ -55,6 +57,18 @@ const apps: {
     icon: Layers,
     label: "My Stack",
     description: "Explore tools and workflow",
+  },
+  {
+    id: "projects",
+    icon: FolderKanban,
+    label: "Projects",
+    description: "Browse portfolio projects",
+  },
+  {
+    id: "contact",
+    icon: Mail,
+    label: "Contact",
+    description: "Open collaboration links",
   },
   { id: "about", icon: User, label: "About", description: "Meet the creator" },
   {
